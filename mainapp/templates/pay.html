@@ -17,7 +17,7 @@
         // "order":"{{order}}",//this is a sample order id pass the id obtained in the responseof 
         "order":"{{order_id}}",//this is a sample order id pass the id obtained in the responseof 
         "handler":function (response){
-        window.open("/payment-success/"+response.razorpay_payment_id+"/"+response.razorpay_order_id+"/"+response.razorpay_signature+"/")
+        window.open("/payment-success/"+id+"/"+response.razorpay_payment_id+"/"+response.razorpay_order_id+"/"+response.razorpay_signature+"/")
 
         },
         "prefill":{

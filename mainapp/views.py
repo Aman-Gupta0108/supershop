@@ -384,7 +384,12 @@ def checkoutpage(Request):
                     paymantId = paymantOrder["id"]
                     checkout.paymantmode=1
                     checkout.save()
-                    return render(Request,"pay.html",{"amount":orderAmount,"api_key":RAZORPAY_API_KEY,"order_id":paymantId,"user":buyer})
+                    return render(Request,"pay.html",{
+                        "amount":orderAmount,
+                        "api_key":RAZORPAY_API_KEY,
+                        "order_id":paymantId,
+                        "user":buyer,
+                        "id":-1})
                 # return HttpResponseRedirect("/confirmation")
         return render(Request,"checkout.html",{'buyer':buyer,'subtotal':subtotal,"shipping":shipping,'total':total,'cart':cart})
     except:
@@ -402,7 +407,12 @@ def rePaymentpage(Request,id):
         paymantId = paymantOrder["id"]
         checkout.paymantmode=1
         checkout.save()
-        return render(Request,"pay.html",{"amount":orderAmount,"api_key":RAZORPAY_API_KEY,"order_id":paymantId,"user":buyer})
+        return render(Request,"pay.html",{
+            "amount":orderAmount,
+            "api_key":RAZORPAY_API_KEY,
+            "order_id":paymantId,
+            "user":buyer,
+            "id":id})
     
     except:
         return HttpResponseRedirect("/profile/")
