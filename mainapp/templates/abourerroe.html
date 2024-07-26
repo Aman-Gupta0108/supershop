@@ -1,0 +1,59 @@
+FieldError at /profile/
+Cannot resolve keyword 'checkout' into field. Choices are: id, product, product_id, qty, total
+Request Method:	GET
+Request URL:	http://127.0.0.1:8000/profile/
+Django Version:	4.2.7
+Exception Type:	FieldError
+Exception Value:	
+Cannot resolve keyword 'checkout' into field. Choices are: id, product, product_id, qty, total
+Exception Location:	C:\Users\aman9\AppData\Roaming\Python\Python312\site-packages\django\db\models\sql\query.py, line 1724, in names_to_path
+Raised during:	mainapp.views.profilepage
+Python Executable:	C:\Program Files\Python312\python.exe
+Python Version:	3.12.0
+Python Path:	
+['C:\\Users\\aman9\\OneDrive\\Desktop\\django\\supershop',
+ 'C:\\Program Files\\Python312\\python312.zip',
+ 'C:\\Program Files\\Python312\\DLLs',
+ 'C:\\Program Files\\Python312\\Lib',
+ 'C:\\Program Files\\Python312',
+ 'C:\\Users\\aman9\\AppData\\Roaming\\Python\\Python312\\site-packages',
+ 'C:\\Program Files\\Python312\\Lib\\site-packages']
+Server time:	Thu, 04 Jul 2024 09:00:56 +0000 
+
+class CheckoutProduct(models.Model):
+    id=models.AutoField(primary_key=True)
+    checkout=models.ForeignKey(Checkout,on_delete=models.CASCADE),
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    qty=models.IntegerField()
+    total=models.IntegerField()          
+
+class Checkout(models.Model):
+    id= models.AutoField(primary_key=True)
+    buyer=models.ForeignKey(Buyer,on_delete=models.CASCADE)
+    orderstatus = models.IntegerField(choices=orderStatusOptions, default=0)
+    paymantstatus = models.IntegerField(choices=paymantStatusOptions, default=0)
+    paymantmode = models.IntegerField(choices=paymantModeOptions, default=0)
+    subtotal=models.IntegerField()
+    shipping=models.IntegerField()
+    total=models.IntegerField()
+    rppid =models.CharField(max_length=20,default="",null=True,blank=True)
+    date = models.DateTimeField(auto_now=True)
+
+
+def profilepage(Request):
+    if(Request.user.is_superuser):
+        return HttpResponseRedirect("/admin/")
+    
+    # username=Request.user.username
+    # try:
+    buyer = Buyer.objects.get(username=Request.user.username)
+    wishlist = Wishlist.objects.filter(buyer=buyer)
+    checkout = Checkout.objects.filter(buyer=buyer)
+    orders = []
+    for item in checkout:
+        cp = CheckoutProduct.objects.filter(checkout=item)
+        orders.append({'checkout':item,'cp':cp})
+    print(orders,'\n\n\n\n')
+    return render(Request,"profile.html",{'buyer':buyer , "wishlist":wishlist})
+    
+find error 
