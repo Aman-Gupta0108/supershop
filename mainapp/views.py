@@ -378,7 +378,7 @@ def checkoutpage(Request):
                 if(mode == "COD"):
                     return HttpResponseRedirect("/confirmation")
                 else:
-                    orderAmount=checkout.total
+                    orderAmount=checkout.total*100
                     orderCurrency="INR"
                     paymantOrder=client.order.create(dict(amount=orderAmount,currency=orderCurrency, payment_capture='0'))
                     paymantId = paymantOrder["id"]
@@ -401,7 +401,7 @@ def rePaymentpage(Request,id):
     try:
         checkout=Checkout.objects.get(id=id)
         buyer = Buyer.objects.get(username=Request.user.username)
-        orderAmount=checkout.total
+        orderAmount=checkout.total*100
         orderCurrency="INR"
         paymantOrder=client.order.create(dict(amount=orderAmount,currency=orderCurrency, payment_capture='0'))
         paymantId = paymantOrder["id"]
