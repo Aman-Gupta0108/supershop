@@ -389,7 +389,7 @@ def checkoutpage(Request):
                         "api_key":RAZORPAY_API_KEY,
                         "order_id":paymantId,
                         "user":buyer,
-                        "id":-1})
+                        "id":checkout.id})
                 # return HttpResponseRedirect("/confirmation")
         return render(Request,"checkout.html",{'buyer':buyer,'subtotal':subtotal,"shipping":shipping,'total':total,'cart':cart})
     except:
@@ -413,16 +413,16 @@ def rePaymentpage(Request,id):
             "order_id":paymantId,
             "user":buyer,
             "id":id})
+        
     
     except:
         return HttpResponseRedirect("/profile/")
     
 @login_required(login_url='/login/')
-def paymentSuccesspage(Request,rppid,rpoid,rpsid):
-    buyer=Buyer.objects.get(username=Request.user)
-    check = Checkout.objects.filter(user=buyer)
-    check=check[::-1]
-    check=check[0]
+def paymentSuccesspage(Request,id,rppid,rpoid,rpsid):
+    
+    check = Checkout.objects.get(id=id)
+
     check.rppid=rppid
     check.paymantstatus=1
     check.save()
