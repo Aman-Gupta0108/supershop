@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!=08d+=-w9b!^g0#58*$q2frktf+d(u8mnbirv5sd@2302*cs9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -142,3 +142,6 @@ EMAIL_HOST_PASSWORD ="zdfprkkamxvrhqta"
 # FOR PAYMANT GATEWAY
 RAZORPAY_API_KEY = 'rzp_test_22h5anoTVK9UWa'
 RAZORPAY_API_SECRET_KEY = "zyZ1P2GxBqnDqPrQjDiQWM1Y"
+
+
+STATIC_ROOT="/home/aman1212/E-com-Supershop/static/"
