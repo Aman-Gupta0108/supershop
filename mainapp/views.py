@@ -13,6 +13,9 @@ from django.core.mail import send_mail
 
 from supershop.settings import RAZORPAY_API_KEY ,RAZORPAY_API_SECRET_KEY
 import razorpay
+
+
+from django.core.paginator import Paginator
 # from .client import Client
 
 # Create your views here.
@@ -168,8 +171,10 @@ def shoppage(Request ,mc,sc,br):
     maincategory = Maincategory.objects.all().order_by("-id")
     subcategory = Subcategory.objects.all().order_by("-id")
     brand = Brand.objects.all().order_by("-id")
-
-    return render(Request,'shop.html',{'products':products , "maincategory":maincategory , "subcategory":subcategory, "brand":brand,'mc':mc, 'sc':sc, "br":br})
+    paginator = Paginator(products,4)
+    page_number = Request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(Request,'shop.html',{'products':products , "maincategory":maincategory , "subcategory":subcategory, "brand":brand,'mc':mc, 'sc':sc, "br":br,"page_obj":page_obj})
 
 
 def searchPage(Request):
@@ -357,12 +362,13 @@ def checkoutpage(Request):
             # placed order or payment
             if(Request.method == 'POST'):
                 mode = Request.POST.get("mode")
+
                 checkout = Checkout()
                 checkout.buyer=buyer
                 checkout.subtotal=subtotal
                 checkout.total=total
                 checkout.shipping=shipping
-                checkout.paymantmode=mode
+                # checkout.paymantmode=mode
                 checkout.save()
 
                 for key,value in cart.items():
@@ -373,10 +379,10 @@ def checkoutpage(Request):
                     cp.qty = value['qty']
                     cp.total = value['total']
                     cp.save()
-                    # Request.session['cart']={}
+                    Request.session['cart']={}
 
                 if(mode == "COD"):
-                    return HttpResponseRedirect("/confirmation")
+                    return HttpResponseRedirect(f"/confirmation/{str(checkout.id)}/")
                 else:
                     orderAmount=checkout.total*100
                     orderCurrency="INR"
@@ -426,7 +432,7 @@ def paymentSuccesspage(Request,id,rppid,rpoid,rpsid):
     check.rppid=rppid
     check.paymantstatus=1
     check.save()
-    return HttpResponseRedirect("/confirmation/")
+    return HttpResponseRedirect("/confirmation/"+str(id)+"/")
 
 
   
@@ -462,22 +468,67 @@ def paymentSuccesspage(Request,id,rppid,rpoid,rpsid):
 
 
 @login_required(login_url="/login/")
-def confirmationpage(Request):
+def confirmationpage(Request,id):
     try:
         buyer = Buyer.objects.get(username=Request.user.username)
-        checkout = Checkout.objects.filter(buyer=buyer).order_by("-id").first()
+        # checkout = Checkout.objects.filter(buyer=buyer).order_by("-id").first()
         
-        # cart=Request.session.get("cart",None)
-        cart=Request.session.get('cart',None)
+        checkout = Checkout.objects.get(id = id)
+        cart=CheckoutProduct.objects.filter(checkout=checkout)
+        
         subtotal=0
         shipping=0
         total=0
-        if(cart):
-            for value in cart.values():
-                subtotal = subtotal + value['total']
-            if(subtotal > 0 and subtotal<1000):
+        # cart=Request.session.get('cart',None)
+        # Request.session['cart']={}
+        for item in cart:
+            subtotal = subtotal + item.total
+        if(subtotal > 0 and subtotal<1000):
                 shipping=150
-            total = subtotal+ shipping
+        total = subtotal+ shipping
+        
+        return render(Request,'confirmation.html',{'cart':cart,'subtotal':subtotal,'shipping':shipping,'total':total,'buyer':buyer,'checkout':checkout})
+    except:
+        return HttpResponseRedirect("/admin/")
+#         return render(Request,'confirmation.html',{'cart':cart,'subtotal':subtotal,'shipping':shipping,'total':total,'buyer':buyer,'checkout':checkout})
+
+
+
+
+        # cart=CheckoutProduct.objects.filter(checkout = Checkout.objects.get(id =id))
+        
+        # subtotal=0
+        # shipping=0
+        # total=0
+#         print(cart,"/n/n/n/n")
+        # for item in cart:
+        #     subtotal = subtotal + item.total
+        # if(subtotal > 0 and subtotal<1000):
+        #         shipping=150
+        # total = subtotal+ shipping
+        
+
+    
+
+
+
+
+
+
+
+
+
+        # cart=Request.session.get("cart",None)
+        # cart=Request.session.get('cart',None)
+        # subtotal=0
+        # shipping=0
+        # total=0
+        # if(cart):
+        #     for value in cart.values():
+        #         subtotal = subtotal + value['total']
+        #     if(subtotal > 0 and subtotal<1000):
+        #         shipping=150
+        #     total = subtotal+ shipping
 
        
 
@@ -485,12 +536,12 @@ def confirmationpage(Request):
 
         # print(checkout,"\n\n\n\n\n\n\n")
         # print(checkout.paymantmode,"\n\n\n\n\n\n\n")
-        Request.session['cart']={}
-        return render(Request,'confirmation.html',{'cart':cart,'subtotal':subtotal,'shipping':shipping,'total':total,'buyer':buyer,'checkout':checkout})
+        # Request.session['cart']={}
+    #     return render(Request,'confirmation.html',{'cart':cart,'subtotal':subtotal,'shipping':shipping,'total':total,'buyer':buyer,'checkout':checkout})
 
     
-    except:
-        return HttpResponseRedirect("/admin/")
+    # except:
+    #     return HttpResponseRedirect("/admin/")
 
 
 def newslatteSubscribePage(Request):

@@ -144,4 +144,7 @@ RAZORPAY_API_KEY = 'rzp_test_22h5anoTVK9UWa'
 RAZORPAY_API_SECRET_KEY = "zyZ1P2GxBqnDqPrQjDiQWM1Y"
 
 
+<<<<<<< HEAD
 STATIC_ROOT="/home/aman1212/E-com-Supershop/static/"
+=======
+>>>>>>> 31bc6a7f4b2341975def069569b3fd1b2ebf6f2e
