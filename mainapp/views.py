@@ -13,6 +13,9 @@ from django.core.mail import send_mail
 
 from supershop.settings import RAZORPAY_API_KEY ,RAZORPAY_API_SECRET_KEY
 import razorpay
+
+
+from django.core.paginator import Paginator
 # from .client import Client
 
 # Create your views here.
@@ -168,8 +171,10 @@ def shoppage(Request ,mc,sc,br):
     maincategory = Maincategory.objects.all().order_by("-id")
     subcategory = Subcategory.objects.all().order_by("-id")
     brand = Brand.objects.all().order_by("-id")
-
-    return render(Request,'shop.html',{'products':products , "maincategory":maincategory , "subcategory":subcategory, "brand":brand,'mc':mc, 'sc':sc, "br":br})
+    paginator = Paginator(products,4)
+    page_number = Request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(Request,'shop.html',{'products':products , "maincategory":maincategory , "subcategory":subcategory, "brand":brand,'mc':mc, 'sc':sc, "br":br,"page_obj":page_obj})
 
 
 def searchPage(Request):
