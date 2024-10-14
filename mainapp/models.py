@@ -125,6 +125,7 @@ class Newslatter(models.Model):
 
     def __str__(self):
         return str(self.id)+" / "+(self.email)
+        
     
 
 class Contact(models.Model):
